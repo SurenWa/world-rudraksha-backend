@@ -49,5 +49,5 @@ jobs:
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: nestjs-app-service
-          cluster: DevCluster
+          cluster: WorldRudrakshaCluster
           wait-for-service-stability: true
