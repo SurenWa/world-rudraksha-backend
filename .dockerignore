@@ -1,0 +1,48 @@
+# Ignore node_modules (will be installed during the build process)
+node_modules
+
+# Ignore build artifacts
+dist
+
+# Ignore local environment files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Ignore npm debug logs
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Ignore IDE and editor files
+.vscode
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Ignore version control files
+.git
+.gitignore
+.gitattributes
+
+# Ignore Prisma migration files (optional, if you handle migrations separately)
+prisma/migrations
+
+# Ignore local development files
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Ignore logs and temporary files
+logs
+*.log
+*.tmp
+*.pid
+
+# Ignore coverage reports (if applicable)
+coverage
