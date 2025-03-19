@@ -1,9 +1,9 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:us-east-2:090359340463:task-definition/nestjs-app-task-definition:1",
+    "taskDefinitionArn": "arn:aws:ecs:us-east-2:090359340463:task-definition/nestjs-app-task-definition:2",
     "containerDefinitions": [
         {
             "name": "world-rudraksha-backend",
-            "image": "090359340463.dkr.ecr.us-east-2.amazonaws.com/world-rudraksha-backend",
+            "image": "090359340463.dkr.ecr.us-east-2.amazonaws.com/world-rudraksha-backend:305931132eaf9b54ba05b7ccbb7d35fc08d7af52",
             "cpu": 0,
             "portMappings": [
                 {
@@ -16,10 +16,8 @@
             ],
             "essential": true,
             "environment": [],
-            "environmentFiles": [],
             "mountPoints": [],
             "volumesFrom": [],
-            "ulimits": [],
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
@@ -29,8 +27,7 @@
                     "max-buffer-size": "25m",
                     "awslogs-region": "us-east-2",
                     "awslogs-stream-prefix": "ecs"
-                },
-                "secretOptions": []
+                }
             },
             "systemControls": []
         }
@@ -39,7 +36,7 @@
     "taskRoleArn": "arn:aws:iam::090359340463:role/ecsTaskExecutionRole",
     "executionRoleArn": "arn:aws:iam::090359340463:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
-    "revision": 1,
+    "revision": 2,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -88,7 +85,7 @@
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
     },
-    "registeredAt": "2025-03-19T12:17:04.013Z",
+    "registeredAt": "2025-03-19T13:57:36.054Z",
     "registeredBy": "arn:aws:iam::090359340463:user/parshugc1986",
     "enableFaultInjection": false,
     "tags": []
