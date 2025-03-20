@@ -33,7 +33,13 @@ jobs:
           # Build a docker container and
           # push it to ECR so that it can
           # be deployed to ECS.
-          docker build -t $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker build --build-arg JWT_SECRET=${{ secrets.JWT_SECRET }} \
+                       --build-arg JWT_EXPIRATION=${{ secrets.JWT_EXPIRATION }} \
+                       --build-arg DATABASE_URL=${{ secrets.DATABASE_URL }} \
+                       --build-arg NODE_ENV=${{ secrets.NODE_ENV }} \
+                       --build-arg REFRESH_TOKEN_SECRET=${{ secrets.REFRESH_TOKEN_SECRET }} \
+                       --build-arg REFRESH_TOKEN_EXPIRATION=${{ secrets.REFRESH_TOKEN_EXPIRATION }} \
+                       -t $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
@@ -44,6 +50,13 @@ jobs:
           task-definition: nestjs-app-task-definition.json
           container-name: world-rudraksha-backend
           image: ${{ steps.build-image.outputs.image }}
+          environment-variables: |
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            JWT_EXPIRATION=${{ secrets.JWT_EXPIRATION }}
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            NODE_ENV=${{ secrets.NODE_ENV }}
+            REFRESH_TOKEN_SECRET=${{ secrets.REFRESH_TOKEN_SECRET }}
+            REFRESH_TOKEN_EXPIRATION=${{ secrets.REFRESH_TOKEN_EXPIRATION }}
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
         with:

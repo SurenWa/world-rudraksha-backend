@@ -3,8 +3,25 @@ FROM node:20.19 AS build
 WORKDIR /usr/src/app
 
 # Copy package files and install dependencies
-COPY package.json ./
+COPY package*.json ./
 RUN npm install --force
+
+# Add build arguments
+ARG JWT_SECRET
+ARG JWT_EXPIRATION
+ARG DATABASE_URL
+ARG NODE_ENV
+ARG REFRESH_TOKEN_SECRET
+ARG JWT_EXPIRATION
+
+# Set environment variables
+ENV JWT_SECRET=$JWT_SECRET
+ENV JWT_EXPIRATION=$JWT_EXPIRATION
+ENV DATABASE_URL=$DATABASE_URL
+ENV NODE_ENV=$NODE_ENV
+ENV REFRESH_TOKEN_SECRET=$REFRESH_TOKEN_SECRET
+ENV REFRESH_TOKEN_EXPIRATION=$REFRESH_TOKEN_EXPIRATION
+
 
 # Copy the rest of the application code
 COPY . .
