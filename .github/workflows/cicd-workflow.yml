@@ -39,33 +39,31 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: ubuntu-latest  # You can change this to self-hosted if needed
+    runs-on: self-hosted  # Ensure this runs on your self-hosted runner
     steps:
-      - name: SSH into EC2 and Deploy
-        uses: appleboy/ssh-action@v0.1.7
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-          script: |
-            # Login to AWS ECR
-            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+      - name: Login to AWS ECR
+        run: |
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
-            # Pull the latest Docker image from AWS ECR
-            docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/world-rudraksha-server:latest
+      - name: Pull the latest Docker image from AWS ECR
+        run: |
+          docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/world-rudraksha-server:latest
 
-            # Stop and remove the existing container (if running)
-            docker rm -f world-rudraksha-server || true
+      - name: Stop and remove the existing container (if running)
+        run: |
+          docker rm -f world-rudraksha-server || true
 
-            # Run the new container
-            docker run -d -p 5000:5000 --name world-rudraksha-server \
-              -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
-              -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
-              -e JWT_EXPIRATION=${{ secrets.JWT_EXPIRATION }} \
-              -e REFRESH_TOKEN_EXPIRATION=${{ secrets.REFRESH_TOKEN_EXPIRATION }} \
-              -e REFRESH_TOKEN_SECRET=${{ secrets.REFRESH_TOKEN_SECRET }} \
-              -e NODE_ENV=${{ secrets.NODE_ENV }} \              
-              ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/world-rudraksha-server:latest
+      - name: Run the new container
+        run: |
+          docker run -d -p 5000:5000 --name world-rudraksha-server \
+            -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+            -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
+            -e JWT_EXPIRATION=${{ secrets.JWT_EXPIRATION }} \
+            -e REFRESH_TOKEN_EXPIRATION=${{ secrets.REFRESH_TOKEN_EXPIRATION }} \
+            -e REFRESH_TOKEN_SECRET=${{ secrets.REFRESH_TOKEN_SECRET }} \
+            -e NODE_ENV=${{ secrets.NODE_ENV }} \
+            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/world-rudraksha-server:latest
 
-            # Run Prisma migrations inside the container
-            docker exec world-rudraksha-server npx prisma migrate deploy
+      - name: Run Prisma migrations inside the container
+        run: |
+          docker exec world-rudraksha-server npx prisma migrate deploy
