@@ -42,6 +42,9 @@ jobs:
     runs-on: self-hosted  # Ensure this runs on your self-hosted runner
     steps:
 
+      - name: Checkout Source(deploy)
+        uses: actions/checkout@v4
+
       - name: Configure AWS CLI(deploy)
         run: |
           aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY }}
