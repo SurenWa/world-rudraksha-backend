@@ -262,42 +262,73 @@ export class AuthController {
     }
 
     @Post('logout')
-    //@UseGuards(JwtAuthGuard) // Ensure the user is authenticated
-    @ApiCookieAuth()
-    async logout(
-        @Req() req: RequestWithUser,
-        @Res({ passthrough: true }) res: Response,
-    ) {
-        // const userId = req.user.userId; // Assuming the user object is attached by the JWT strategy
+    async logout(@Req() req: Request, @Res() res: Response) {
+        try {
+            const token = req?.cookies?.access_token; // Get the access token from cookies
 
-        // // Clear the refresh token in the User model
-        // await this.authService.logout(userId);
+            if (!token) {
+                return res
+                    .status(400)
+                    .json({ message: 'No access token found' });
+            }
 
-        // // Clear the access and refresh token cookies
-        // res.clearCookie('access_token');
-        // res.clearCookie('refresh_token');
+            // Decode the token to extract userId (without verification to allow expired tokens)
+            const decoded = this.jwtService.decode(token) as {
+                sub: string;
+            } | null;
 
-        // return res.status(200).json({ message: 'Logged out successfully' });
+            //console.log('decoded', decoded?.sub);
 
-        const token = req.cookies?.access_token; // Get the access token from cookies
+            if (!decoded || !decoded.sub) {
+                return res
+                    .status(400)
+                    .json({ message: 'Invalid token, user ID not found' });
+            }
 
-        // Decode the token to extract userId
-        const decoded = this.jwtService.decode(token);
+            // Ensure userId is a valid number
+            const userId = parseInt(decoded.sub, 10);
+            if (isNaN(userId)) {
+                return res
+                    .status(400)
+                    .json({ message: 'Invalid user ID format' });
+            }
 
-        if (decoded && typeof decoded === 'object' && 'userId' in decoded) {
-            const userId = decoded.userId; // Extract userId from the decoded token
-            await this.authService.logout(userId); // Delete the refreshToken from the database
-        } else {
-            console.error('Failed to decode access token or userId not found');
+            //console.log('Logging out user:', userId);
+
+            // Set refreshToken to null in the database
+            await this.authService.logout(userId);
+
+            // Clear access and refresh token cookies
+            res.clearCookie('access_token', {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production', // Secure in production
+                sameSite:
+                    process.env.NODE_ENV === 'production' ? 'none' : 'strict', // Cross-domain support
+                domain:
+                    process.env.NODE_ENV === 'production'
+                        ? '.worldrudraksha.com'
+                        : 'localhost',
+                path: '/',
+            });
+
+            res.clearCookie('refresh_token', {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite:
+                    process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+                domain:
+                    process.env.NODE_ENV === 'production'
+                        ? '.worldrudraksha.com'
+                        : 'localhost',
+                path: '/',
+            });
+
+            return res.status(200).json({ message: 'Logged out successfully' });
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {
+            //console.error('Logout error:', error);
+            return res.status(500).json({ message: 'Internal Server Error' });
         }
-
-        // Clear the access and refresh token cookies
-        res.clearCookie('access_token');
-        res.clearCookie('refresh_token');
-
-        console.log('Logout request received');
-
-        return res.status(200).json({ message: 'Logged out successfully' });
     }
 
     @Post('clearTokens')
@@ -308,7 +339,7 @@ export class AuthController {
         res.clearCookie('access_token');
         res.clearCookie('refresh_token');
 
-        return res.status(200).json({ message: 'Logged out successfully' });
+        return res.status(201).json({ message: 'Logged out successfully' });
     }
 
     // @Post()
