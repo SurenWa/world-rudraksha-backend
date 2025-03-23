@@ -58,23 +58,28 @@ export class AuthController {
         const tokens = await this.authService.login(loginDto);
         res.cookie('access_token', tokens.accessToken, {
             httpOnly: true,
-            //secure: process.env.NODE_ENV === 'production',
-            secure: false,
-            sameSite: 'strict',
-                    
+            secure: process.env.NODE_ENV === 'production', // Secure only in production
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict', // None for production, Strict for local
+            domain:
+                process.env.NODE_ENV === 'production'
+                    ? '.worldrudraksha.com'
+                    : 'localhost', // Use correct domain
+            path: '/',
         });
         res.cookie('refresh_token', tokens.refreshToken, {
             httpOnly: true,
-            //secure: process.env.NODE_ENV === 'production',
-            secure: false,
-            sameSite: 'strict',
-            
+            secure: process.env.NODE_ENV === 'production', // Secure only in production
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict', // None for production, Strict for local
+            domain:
+                process.env.NODE_ENV === 'production'
+                    ? '.worldrudraksha.com'
+                    : 'localhost', // Use correct domain
+            path: '/',
         });
         return {
             message: 'Logged in successfully',
             firstName: tokens?.firstName,
             role: tokens?.role,
-            
         };
     }
 
@@ -131,12 +136,12 @@ export class AuthController {
             const payload = this.jwtService.verify(refreshToken, {
                 secret: this.configService.get<string>('REFRESH_TOKEN_SECRET'),
             });
-            
+
             // Find the user and validate the refresh token
             const user = await this.authService.validateRefreshToken(
                 payload.sub,
             );
-            
+
             if (!user) {
                 throw new ForbiddenException('Invalid refresh token');
             }
