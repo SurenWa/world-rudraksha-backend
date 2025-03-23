@@ -263,7 +263,10 @@ export class AuthController {
     @Post('logout')
     @UseGuards(JwtAuthGuard) // Ensure the user is authenticated
     @ApiCookieAuth()
-    async logout(@Req() req: RequestWithUser, @Res() res: Response) {
+    async logout(
+        @Req() req: RequestWithUser,
+        @Res({ passthrough: true }) res: Response,
+    ) {
         const userId = req.user.userId; // Assuming the user object is attached by the JWT strategy
 
         // Clear the refresh token in the User model
