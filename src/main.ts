@@ -7,8 +7,14 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     app.useGlobalPipes(new ValidationPipe());
+
+    const allowedOrigins =
+        process.env.NODE_ENV === 'production'
+            ? ['https://worldrudraksha.com', 'https://admin.worldrudraksha.com']
+            : ['http://localhost:3001', 'http://localhost:3000'];
+
     app.enableCors({
-        origin: 'http://localhost:3001', // Replace with your frontend URL
+        origin: allowedOrigins, // Replace with your frontend URL
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
         credentials: true, // Ensure credentials are allowed
     });
