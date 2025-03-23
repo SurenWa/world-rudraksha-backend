@@ -14,6 +14,7 @@ import {
     UnauthorizedException,
     ForbiddenException,
 } from '@nestjs/common';
+//import * as jwt from 'jsonwebtoken';
 import { AuthService } from './auth.service';
 //import { CreateAuthDto } from './dto/create-auth.dto';
 //import { UpdateAuthDto } from './dto/update-auth.dto';
@@ -261,20 +262,40 @@ export class AuthController {
     }
 
     @Post('logout')
-    @UseGuards(JwtAuthGuard) // Ensure the user is authenticated
+    //@UseGuards(JwtAuthGuard) // Ensure the user is authenticated
     @ApiCookieAuth()
     async logout(
         @Req() req: RequestWithUser,
         @Res({ passthrough: true }) res: Response,
     ) {
-        const userId = req.user.userId; // Assuming the user object is attached by the JWT strategy
+        // const userId = req.user.userId; // Assuming the user object is attached by the JWT strategy
 
-        // Clear the refresh token in the User model
-        await this.authService.logout(userId);
+        // // Clear the refresh token in the User model
+        // await this.authService.logout(userId);
+
+        // // Clear the access and refresh token cookies
+        // res.clearCookie('access_token');
+        // res.clearCookie('refresh_token');
+
+        // return res.status(200).json({ message: 'Logged out successfully' });
+
+        const token = req.cookies?.access_token; // Get the access token from cookies
+
+        // Decode the token to extract userId
+        const decoded = this.jwtService.decode(token);
+
+        if (decoded && typeof decoded === 'object' && 'userId' in decoded) {
+            const userId = decoded.userId; // Extract userId from the decoded token
+            await this.authService.logout(userId); // Delete the refreshToken from the database
+        } else {
+            console.error('Failed to decode access token or userId not found');
+        }
 
         // Clear the access and refresh token cookies
         res.clearCookie('access_token');
         res.clearCookie('refresh_token');
+
+        console.log('Logout request received');
 
         return res.status(200).json({ message: 'Logged out successfully' });
     }
@@ -283,11 +304,6 @@ export class AuthController {
     // @UseGuards(JwtAuthGuard) // Ensure the user is authenticated
     // @ApiCookieAuth()
     async clearTokens(@Res() res: Response) {
-        //const userId = req.user.userId; // Assuming the user object is attached by the JWT strategy
-
-        // Clear the refresh token in the User model
-        //await this.authService.logout(userId);
-
         // Clear the access and refresh token cookies
         res.clearCookie('access_token');
         res.clearCookie('refresh_token');
