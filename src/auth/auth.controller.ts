@@ -154,16 +154,34 @@ export class AuthController {
 
             // Set the new tokens as HTTP-only cookies
             res.cookie('access_token', tokens.accessToken, {
+                // httpOnly: true,
+                // //secure: process.env.NODE_ENV === 'production',
+                // secure: false,
+                // sameSite: 'strict',
                 httpOnly: true,
-                //secure: process.env.NODE_ENV === 'production',
-                secure: false,
-                sameSite: 'strict',
+                secure: process.env.NODE_ENV === 'production', // Secure only in production
+                sameSite:
+                    process.env.NODE_ENV === 'production' ? 'none' : 'strict', // None for production, Strict for local
+                domain:
+                    process.env.NODE_ENV === 'production'
+                        ? '.worldrudraksha.com'
+                        : 'localhost', // Use correct domain
+                path: '/',
             });
             res.cookie('refresh_token', tokens.refreshToken, {
+                // httpOnly: true,
+                // //secure: process.env.NODE_ENV === 'production',
+                // secure: false,
+                // sameSite: 'strict',
                 httpOnly: true,
-                //secure: process.env.NODE_ENV === 'production',
-                secure: false,
-                sameSite: 'strict',
+                secure: process.env.NODE_ENV === 'production', // Secure only in production
+                sameSite:
+                    process.env.NODE_ENV === 'production' ? 'none' : 'strict', // None for production, Strict for local
+                domain:
+                    process.env.NODE_ENV === 'production'
+                        ? '.worldrudraksha.com'
+                        : 'localhost', // Use correct domain
+                path: '/',
             });
 
             return { message: 'Tokens refreshed successfully' };
