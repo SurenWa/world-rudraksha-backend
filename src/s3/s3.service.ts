@@ -13,11 +13,15 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 @Injectable()
 export class S3Service {
     private readonly s3Client: S3Client;
-    private readonly bucketName =
-        this.configService.get<string>('AWS_S3_BUCKET_NAME');
-    private readonly awsRegion = this.configService.get<string>('AWS_REGION');
+    // private readonly bucketName =
+    //     this.configService.get<string>('AWS_S3_BUCKET_NAME');
+    // private readonly awsRegion = this.configService.get<string>('AWS_REGION');
+    private readonly bucketName: string;
+    private readonly awsRegion: string;
 
     constructor(private configService: ConfigService) {
+        this.bucketName = this.configService.get<string>('AWS_S3_BUCKET_NAME');
+        this.awsRegion = this.configService.get<string>('AWS_REGION');
         this.s3Client = new S3Client({
             region: this.configService.get<string>('AWS_REGION'),
             credentials: {
