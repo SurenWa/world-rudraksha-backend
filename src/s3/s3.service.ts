@@ -26,7 +26,7 @@ export class S3Service {
         this.awsRegion =
             this.configService.get<string>('AWS_REGION') || 'us-east-2';
         this.s3Client = new S3Client({
-            region: this.configService.get<string>('AWS_REGION'),
+            region: this.configService.get<string>('AWS_REGION') || 'us-east-2',
             credentials: {
                 accessKeyId: this.configService.get<string>('AWS_ACCESS_KEY'),
                 secretAccessKey: this.configService.get<string>(
@@ -34,6 +34,7 @@ export class S3Service {
                 ),
             },
         });
+        console.log('S3 Client initialized with region:', this.awsRegion); // Debug log
     }
 
     async uploadFile(
