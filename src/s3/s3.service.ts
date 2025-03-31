@@ -58,7 +58,7 @@ export class S3Service {
             // For public objects, construct the public URL directly
             const url =
                 folder === 'categories'
-                    ? `https://${this.bucketName}.s3.${this.awsRegion}.amazonaws.com/${fileKey}`
+                    ? `https://${this.bucketName}.s3.us-east-2.amazonaws.com/${fileKey}`
                     : await this.getSignedUrl(fileKey);
 
             return {
