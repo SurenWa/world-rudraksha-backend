@@ -3,6 +3,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { json, urlencoded } from 'express';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -23,6 +24,8 @@ async function bootstrap() {
         exclude: ['/'], // Exclude the root route
     });
     app.use(cookieParser());
+    app.use(json({ limit: '50mb' }));
+    app.use(urlencoded({ extended: true, limit: '50mb' }));
     // Swagger setup
     const config = new DocumentBuilder()
         .setTitle('Divine Rudraksha API documentation')

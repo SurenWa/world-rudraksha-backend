@@ -21,25 +21,6 @@ export class AuthService {
         private configService: ConfigService,
     ) {}
 
-    // async validateUser(email: string, password: string): Promise<any> {
-    //     const user = await this.prisma.user.findUnique({
-    //         where: { email },
-    //         select: {
-    //             id: true,
-    //             email: true,
-    //             role: true,
-    //             firstName: true,
-    //             password: true,
-    //         }, // Ensure firstName is selected
-    //     });
-    //     if (user && (await argon2.verify(user.password, password))) {
-    //         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    //         const { password, ...result } = user;
-    //         return result;
-    //     }
-    //     return null;
-    // }
-
     async validateUser(email: string, password: string): Promise<any> {
         const user = await this.prisma.user.findUnique({
             where: { email },
