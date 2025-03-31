@@ -9,7 +9,6 @@ import {
     DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import * as process from 'process';
 
 @Injectable()
 export class S3Service {
@@ -54,7 +53,7 @@ export class S3Service {
             // For public objects, construct the public URL directly
             const url =
                 folder === 'categories'
-                    ? `https://${this.bucketName}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`
+                    ? `https://${this.bucketName}.s3.${this.configService.get<string>('AWS_REGION')}.amazonaws.com/${fileKey}`
                     : await this.getSignedUrl(fileKey);
 
             return {
