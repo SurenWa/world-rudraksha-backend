@@ -15,6 +15,7 @@ export class S3Service {
     private readonly s3Client: S3Client;
     private readonly bucketName =
         this.configService.get<string>('AWS_S3_BUCKET_NAME');
+    private readonly awsRegion = this.configService.get<string>('AWS_REGION');
 
     constructor(private configService: ConfigService) {
         this.s3Client = new S3Client({
@@ -53,7 +54,7 @@ export class S3Service {
             // For public objects, construct the public URL directly
             const url =
                 folder === 'categories'
-                    ? `https://${this.bucketName}.s3.${this.configService.get<string>('AWS_REGION')}.amazonaws.com/${fileKey}`
+                    ? `https://${this.bucketName}.s3.${this.awsRegion}.amazonaws.com/${fileKey}`
                     : await this.getSignedUrl(fileKey);
 
             return {
