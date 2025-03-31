@@ -85,6 +85,11 @@ jobs:
             -e REFRESH_TOKEN_EXPIRATION=${{ secrets.REFRESH_TOKEN_EXPIRATION }} \
             -e REFRESH_TOKEN_SECRET=${{ secrets.REFRESH_TOKEN_SECRET }} \
             -e NODE_ENV=${{ secrets.NODE_ENV }} \
+            -e AWS_REGION=${{ secrets.AWS_REGION }} \
+            -e AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }} \
+            -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+            -e AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }} \
+            -e AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }} \
             ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/world-rudraksha-server:latest
 
       - name: Run Prisma migrations inside the container
