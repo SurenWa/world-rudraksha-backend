@@ -1,9 +1,9 @@
 import {
     Controller,
-    Get,
+    //Get,
     Post,
     Body,
-    Patch,
+    //Patch,
     Param,
     Delete,
     UseInterceptors,
@@ -13,8 +13,8 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import { S3Service } from './s3.service';
-import { CreateS3Dto } from './dto/create-s3.dto';
-import { UpdateS3Dto } from './dto/update-s3.dto';
+//import { CreateS3Dto } from './dto/create-s3.dto';
+//import { UpdateS3Dto } from './dto/update-s3.dto';
 import {
     ApiBearerAuth,
     ApiBody,
@@ -71,30 +71,25 @@ export class S3Controller {
         return this.s3Service.uploadFile(file, body.folder);
     }
 
-    @Post()
-    create(@Body() createS3Dto: CreateS3Dto) {
-        return this.s3Service.create(createS3Dto);
-    }
+    // @Get()
+    // findAll() {
+    //     return this.s3Service.findAll();
+    // }
 
-    @Get()
-    findAll() {
-        return this.s3Service.findAll();
-    }
+    // @Get(':id')
+    // findOne(@Param('id') id: string) {
+    //     return this.s3Service.findOne(+id);
+    // }
 
-    @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.s3Service.findOne(+id);
-    }
+    // @Patch(':id')
+    // update(@Param('id') id: string, @Body() updateS3Dto: UpdateS3Dto) {
+    //     return this.s3Service.update(+id, updateS3Dto);
+    // }
 
-    @Patch(':id')
-    update(@Param('id') id: string, @Body() updateS3Dto: UpdateS3Dto) {
-        return this.s3Service.update(+id, updateS3Dto);
-    }
-
-    @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.s3Service.remove(+id);
-    }
+    // @Delete(':id')
+    // remove(@Param('id') id: string) {
+    //     return this.s3Service.remove(+id);
+    // }
 
     @Delete('image/:imageUrl')
     @UseGuards(JwtAuthGuard, RolesGuard)

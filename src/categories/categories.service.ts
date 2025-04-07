@@ -122,6 +122,18 @@ export class CategoriesService {
         };
     }
 
+    async getTotalCategories() {
+        const totalCategories = await this.prisma.category.findMany({
+            select: {
+                id: true,
+                name: true,
+            },
+        });
+        return {
+            data: totalCategories,
+        };
+    }
+
     async updateCategory(
         id: number,
         updateCategoryDto: UpdateCategoryDto,
@@ -282,6 +294,9 @@ export class CategoriesService {
     async findOneCategory(id: number) {
         const category = await this.prisma.category.findUnique({
             where: { id },
+            // include: {
+            //     subCategories: true, // Include all subcategories under this category
+            // },
         });
 
         if (!category) {

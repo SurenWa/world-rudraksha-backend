@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { CreateS3Dto } from './dto/create-s3.dto';
-import { UpdateS3Dto } from './dto/update-s3.dto';
+// import { CreateS3Dto } from './dto/create-s3.dto';
+// import { UpdateS3Dto } from './dto/update-s3.dto';
 import {
     S3Client,
     PutObjectCommand,
@@ -13,9 +13,6 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 @Injectable()
 export class S3Service {
     private readonly s3Client: S3Client;
-    // private readonly bucketName =
-    //     this.configService.get<string>('AWS_S3_BUCKET_NAME');
-    // private readonly awsRegion = this.configService.get<string>('AWS_REGION');
     private readonly bucketName: string;
     private readonly awsRegion: string;
 
@@ -31,7 +28,6 @@ export class S3Service {
                 ),
             },
         });
-        console.log('S3 Client initialized with region:', this.awsRegion); // Debug log
     }
 
     async uploadFile(
@@ -47,18 +43,13 @@ export class S3Service {
             ContentType: file.mimetype,
         };
 
-        // // If folder is 'categories', make the object public
-        // if (makePublic || folder === 'categories') {
-        //     params.ACL = 'public-read';
-        // }
-
         try {
             const command = new PutObjectCommand(params);
             await this.s3Client.send(command);
 
             // For public objects, construct the public URL directly
             const url =
-                folder === 'categories'
+                folder === 'categories' || 'subcategories'
                     ? `https://${this.bucketName}.s3.us-east-2.amazonaws.com/${fileKey}`
                     : await this.getSignedUrl(fileKey);
 
@@ -111,23 +102,23 @@ export class S3Service {
         return getSignedUrl(this.s3Client, command, { expiresIn: 3600 });
     }
 
-    create(createS3Dto: CreateS3Dto) {
-        return 'This action adds a new s3';
-    }
+    // create(createS3Dto: CreateS3Dto) {
+    //     return 'This action adds a new s3';
+    // }
 
-    findAll() {
-        return `This action returns all s3`;
-    }
+    // findAll() {
+    //     return `This action returns all s3`;
+    // }
 
-    findOne(id: number) {
-        return `This action returns a #${id} s3`;
-    }
+    // findOne(id: number) {
+    //     return `This action returns a #${id} s3`;
+    // }
 
-    update(id: number, updateS3Dto: UpdateS3Dto) {
-        return `This action updates a #${id} s3`;
-    }
+    // update(id: number, updateS3Dto: UpdateS3Dto) {
+    //     return `This action updates a #${id} s3`;
+    // }
 
-    remove(id: number) {
-        return `This action removes a #${id} s3`;
-    }
+    // remove(id: number) {
+    //     return `This action removes a #${id} s3`;
+    // }
 }

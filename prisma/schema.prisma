@@ -1,61 +1,84 @@
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "linux-musl"]
+    provider      = "prisma-client-js"
+    binaryTargets = ["native", "linux-musl"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique
-  password     String
-  role         Role     @default(USER)
-  refreshToken String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  firstName    String
-  lastName     String
+    id           Int      @id @default(autoincrement())
+    email        String   @unique
+    password     String
+    role         Role     @default(USER)
+    refreshToken String?
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+    firstName    String
+    lastName     String
 }
 
 model Category {
-  id          Int      @id @default(autoincrement())
-  name        String   @unique
-  slug        String   @unique 
-  image       String   
-  description String
-  metaTitle   String?  
-  metaDescription String? 
-  keywords    String[] // SEO keywords
-  tags        String[] // Your existing tags [1,2,3,4]
-  addedBy     String
-  // Timestamps
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+    id              Int      @id @default(autoincrement())
+    name            String   @unique
+    slug            String   @unique
+    image           String
+    description     String
+    metaTitle       String?
+    metaDescription String?
+    keywords        String[] // SEO keywords
+    tags            String[] // Your existing tags [1,2,3,4]
+    addedBy         String
+    // Timestamps
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
 
-  // Indexes for better query performance
-  @@index([slug])
-  @@index([name])
-  
-  // Hierarchy and relationships
-  // parentId    String?  // For sub-categories
-  // parent      Category? @relation("CategoryToCategory", fields: [parentId], references: [id])
-  // children    Category[] @relation("CategoryToCategory")
-  
-  // // Content for SEO
-  // content     Json?    // Rich text content with headings, images etc.
-  // featured    Boolean @default(false)
-  
-  // // Tracking
-  // addedBy     String   // User ID
-  // views       Int      @default(0)
-  // popularity  Float    @default(0.0)  
+    subCategories   SubCategory[]
+    // Hierarchy and relationships
+    // parentId    String?  // For sub-categories
+    // parent      Category? @relation("CategoryToCategory", fields: [parentId], references: [id])
+    // children    Category[] @relation("CategoryToCategory")
+
+    // // Content for SEO
+    // content     Json?    // Rich text content with headings, images etc.
+    // featured    Boolean @default(false)
+
+    // // Tracking
+    // addedBy     String   // User ID
+    // views       Int      @default(0)
+    // popularity  Float    @default(0.0)  
+
+    // Indexes for better query performance
+    @@index([slug])
+    @@index([name])
+}
+
+model SubCategory {
+    id              Int      @id @default(autoincrement())
+    name            String   
+    slug            String   @unique
+    image           String
+    description     String
+    metaTitle       String?
+    metaDescription String?
+    keywords        String[] // SEO keywords
+    tags            String[] // Your existing tags [1,2,3,4]
+    addedBy         String
+
+    // Foreign Key for One-to-Many Relationship
+    categoryId      Int
+    category        Category  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+    // Timestamps
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
+    @@index([slug])
+    
 }
 
 enum Role {
-  USER
-  SUBADMIN
-  ADMIN
+    USER
+    SUBADMIN
+    ADMIN
 }

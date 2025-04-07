@@ -1,12 +1,15 @@
 // dto/category.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CategoryDto {
+class SubcategoryDto {
     @ApiProperty()
     id: string;
 
     @ApiProperty()
     name: string;
+
+    @ApiProperty()
+    categoryId: number;
 
     @ApiProperty()
     slug: string;
@@ -30,9 +33,9 @@ export class CategoryDto {
     // updatedAt: Date;
 }
 
-export class PaginatedCategoriesDto {
-    @ApiProperty({ type: () => [CategoryDto] })
-    data: CategoryDto[];
+export class PaginatedSubcategoriesDto {
+    @ApiProperty({ type: () => [SubcategoryDto] })
+    data: SubcategoryDto[];
 
     @ApiProperty()
     meta: {

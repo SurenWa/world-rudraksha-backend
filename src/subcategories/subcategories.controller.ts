@@ -6,23 +6,25 @@ import {
     Patch,
     Param,
     Delete,
+    UseGuards,
     UseInterceptors,
     UploadedFile,
     BadRequestException,
-    UseGuards,
-    ParseIntPipe,
     Query,
+    ParseIntPipe,
 } from '@nestjs/common';
-import { CategoriesService } from './categories.service';
+import { SubcategoriesService } from './subcategories.service';
 import {
-    CreateCategoryDto,
-    CreateCategoryWithFileDto,
-} from './dto/create-category.dto';
+    CreateSubcategoryDto,
+    CreateSubcategoryWithFileDto,
+} from './dto/create-subcategory.dto';
 import {
-    UpdateCategoryDto,
-    UpdateCategoryWithFileDto,
-} from './dto/update-category.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+    UpdateSubcategoryDto,
+    UpdateSubcategoryWithFileDto,
+} from './dto/update-subcategory.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 import {
     ApiBody,
     ApiConsumes,
@@ -32,29 +34,24 @@ import {
     ApiQuery,
     ApiResponse,
 } from '@nestjs/swagger';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import {
-    CategoryDto,
-    PaginatedCategoriesDto,
-} from './dto/paginated-categories.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { PaginatedSubcategoriesDto } from './dto/paginated-subcategories.dto';
 
-@Controller('categories')
-export class CategoriesController {
-    constructor(private readonly categoriesService: CategoriesService) { }
+@Controller('subcategories')
+export class SubcategoriesController {
+    constructor(private readonly subcategoriesService: SubcategoriesService) {}
 
-    @Post('create-category')
+    @Post('create-sub-category')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('ADMIN', 'SUBADMIN')
     @ApiCookieAuth()
     @UseInterceptors(FileInterceptor('image')) // Handles file upload
     @ApiConsumes('multipart/form-data')
     @ApiBody({
-        type: CreateCategoryWithFileDto,
-        description: 'Upload category with image and other details',
+        type: CreateSubcategoryWithFileDto,
+        description: 'Upload sub category with image and other details',
     })
-    async createCategory(
+    async createSubcategory(
         @UploadedFile() imageFile?: Express.Multer.File,
         @Body('data') data?: string, // Receive `data` as string
     ) {
@@ -63,89 +60,93 @@ export class CategoriesController {
         }
 
         // Parse JSON string back into CreateCategoryDto
-        const createCategoryDto: CreateCategoryDto = JSON.parse(data);
+        const createSubcategoryDto: CreateSubcategoryDto = JSON.parse(data);
 
-        return this.categoriesService.createCategory(
-            createCategoryDto,
+        return this.subcategoriesService.createSubcategory(
+            createSubcategoryDto,
             imageFile,
         );
     }
 
-    @Get('get-all-categories')
+    @Get('get-all-subcategories')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('ADMIN', 'SUBADMIN')
     @ApiCookieAuth()
     @ApiQuery({ name: 'page', required: false, type: Number })
     @ApiQuery({ name: 'limit', required: false, type: Number })
+    @ApiQuery({ name: 'categoryId', required: false, type: Number })
     @ApiQuery({ name: 'search', required: false, type: String })
-    @ApiOkResponse({ type: PaginatedCategoriesDto })
-    async getPaginatedCategories(
+    @ApiOkResponse({ type: PaginatedSubcategoriesDto })
+    async getPaginatedSubcategories(
         @Query('page') page = 1,
         @Query('limit') limit = 10,
+        @Query('categoryId') categoryId?: number,
         @Query('search') search = '',
     ) {
-        return this.categoriesService.getPaginatedCategories({
+        return this.subcategoriesService.getPaginatedSubcategories({
             page,
             limit,
+            categoryId,
             search,
         });
     }
 
-    @Get('get-total-categories')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('ADMIN', 'SUBADMIN')
-    @ApiCookieAuth()
-    @ApiOkResponse({ type: CategoryDto }) // Replace CategoryDto with your actual DTO
-    async getTotalCategories() {
-        return this.categoriesService.getTotalCategories();
-    }
-
-    @Patch('update-category/:id')
+    @Patch('update-sub-category/:id')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('ADMIN', 'SUBADMIN')
     @ApiCookieAuth()
     @UseInterceptors(FileInterceptor('image'))
     @ApiConsumes('multipart/form-data')
     @ApiBody({
-        type: UpdateCategoryWithFileDto,
+        type: UpdateSubcategoryWithFileDto,
         description:
-            'Update category details and optionally upload a new image',
+            'Update sub category details and optionally upload a new image',
     })
     @ApiParam({
         name: 'id',
-        description: 'Category ID to update',
+        description: 'Sub Category ID to update',
         type: String,
     })
-    async updateCategory(
+    async updateSubcategory(
         @Param('id', ParseIntPipe) id: number,
         @UploadedFile() imageFile?: Express.Multer.File,
         @Body('data') data?: string, // Receive `data` as string
     ) {
         if (!data) {
-            throw new BadRequestException('Category update data is required');
+            throw new BadRequestException(
+                'Sub Category update data is required',
+            );
         }
 
         // Parse JSON string into UpdateCategoryDto
-        const updateCategoryDto: UpdateCategoryDto = JSON.parse(data);
+        const updateSubcategoryDto: UpdateSubcategoryDto = JSON.parse(data);
 
-        return this.categoriesService.updateCategory(
+        return this.subcategoriesService.updateSubcategory(
             id,
-            updateCategoryDto,
+            updateSubcategoryDto,
             imageFile,
         );
     }
 
-    @Get()
-    findAll() {
-        return this.categoriesService.findAll();
-    }
-
-    @Get('get-one-category/:id')
+    @Get('get-one-sub-category/:id')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('ADMIN', 'SUBADMIN')
     @ApiCookieAuth()
     findOne(@Param('id', ParseIntPipe) id: number) {
-        return this.categoriesService.findOneCategory(id);
+        return this.subcategoriesService.findOneSubCategory(id);
+    }
+
+    @Delete('delete-sub-category/:id')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('ADMIN', 'SUBADMIN')
+    @ApiCookieAuth()
+    @ApiParam({
+        name: 'id',
+        description: 'Sub Category ID to delete',
+        type: String,
+    })
+    async deleteCategory(@Param('id', ParseIntPipe) id: number) {
+        return this.subcategoriesService.deleteSubcategory(id);
     }
 
     @Delete('delete-image/:id')
@@ -168,19 +169,9 @@ export class CategoriesController {
         @Param('id', ParseIntPipe) id: number,
         @Body() body: { imageUrl: string },
     ) {
-        return this.categoriesService.deleteCategoryImage(id, body.imageUrl);
-    }
-
-    @Delete('delete-category/:id')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('ADMIN', 'SUBADMIN')
-    @ApiCookieAuth()
-    @ApiParam({
-        name: 'id',
-        description: 'Category ID to delete',
-        type: String,
-    })
-    async deleteCategory(@Param('id', ParseIntPipe) id: number) {
-        return this.categoriesService.deleteCategory(id);
+        return this.subcategoriesService.deleteSubCategoryImage(
+            id,
+            body.imageUrl,
+        );
     }
 }
