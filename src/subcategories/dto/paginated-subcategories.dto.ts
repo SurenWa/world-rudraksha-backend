@@ -1,7 +1,7 @@
 // dto/category.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
 
-class SubcategoryDto {
+export class SubcategoryDto {
     @ApiProperty()
     id: string;
 

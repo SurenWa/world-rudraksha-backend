@@ -82,62 +82,17 @@ export class SubcategoriesService {
         };
     }
 
-    // async getPaginatedSubcategories(params: {
-    //     page: number;
-    //     limit: number;
-    //     search?: string;
-    //     categoryId?: number;
-    // }) {
-    //     const { page, limit, search, categoryId } = params;
-    //     const page1 = Number(params.page) || 1;
-    //     const limit1 = Number(params.limit) || 10;
-    //     const skip = (page - 1) * limit;
-
-    //     const where: Prisma.SubCategoryWhereInput = search
-    //         ? {
-    //               OR: [
-    //                   { name: { contains: search, mode: 'insensitive' } },
-    //                   {
-    //                       description: {
-    //                           contains: search,
-    //                           mode: 'insensitive',
-    //                       },
-    //                   },
-    //               ],
-    //           }
-    //         : {};
-
-    //     const [subcategories, total] = await Promise.all([
-    //         this.prisma.subCategory.findMany({
-    //             skip,
-    //             take: limit1,
-    //             where,
-    //             orderBy: { createdAt: 'desc' },
-    //             select: {
-    //                 id: true,
-    //                 image: true,
-    //                 name: true,
-    //                 slug: true,
-    //                 description: true,
-    //                 addedBy: true,
-    //                 categoryId: true,
-    //                 // Include products count if needed
-    //                 // products: true,
-    //             },
-    //         }),
-    //         this.prisma.subCategory.count({ where }),
-    //     ]);
-
-    //     return {
-    //         data: subcategories,
-    //         meta: {
-    //             total,
-    //             page: page1,
-    //             limit: limit1,
-    //             lastPage: Math.ceil(total / limit),
-    //         },
-    //     };
-    // }
+    async getTotalSubCategories() {
+        const totalSubCategories = await this.prisma.subCategory.findMany({
+            select: {
+                id: true,
+                name: true,
+            },
+        });
+        return {
+            data: totalSubCategories,
+        };
+    }
 
     async getPaginatedSubcategories(params: {
         page: number;

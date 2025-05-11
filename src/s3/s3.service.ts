@@ -49,7 +49,7 @@ export class S3Service {
 
             // For public objects, construct the public URL directly
             const url =
-                folder === 'categories' || 'subcategories'
+                folder === 'categories' || 'subcategories' || 'attributes'
                     ? `https://${this.bucketName}.s3.us-east-2.amazonaws.com/${fileKey}`
                     : await this.getSignedUrl(fileKey);
 
@@ -60,6 +60,43 @@ export class S3Service {
         } catch (error) {
             throw new Error(`Failed to upload file: ${error.message}`);
         }
+    }
+
+    async uploadMultipleProductFiles(
+        files: Express.Multer.File[],
+    ): Promise<Array<{ key: string; url: string }>> {
+        const folder = 'products';
+        const uploadResults = [];
+
+        await Promise.all(
+            files.map(async (file) => {
+                try {
+                    const fileKey = `${folder}/${Date.now()}-${file.originalname.replace(/\s+/g, '-')}`;
+
+                    const params: PutObjectCommandInput = {
+                        Bucket: this.bucketName,
+                        Key: fileKey,
+                        Body: file.buffer,
+                        ContentType: file.mimetype,
+                    };
+
+                    await this.s3Client.send(new PutObjectCommand(params));
+
+                    const url = `https://${this.bucketName}.s3.us-east-2.amazonaws.com/${fileKey}`;
+
+                    uploadResults.push({
+                        key: fileKey,
+                        url,
+                    });
+                } catch (error) {
+                    throw new Error(
+                        `Failed to upload ${file.originalname}: ${error.message}`,
+                    );
+                }
+            }),
+        );
+
+        return uploadResults;
     }
 
     async deleteImage(imageUrl: string) {

@@ -35,7 +35,10 @@ import {
     ApiResponse,
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { PaginatedSubcategoriesDto } from './dto/paginated-subcategories.dto';
+import {
+    PaginatedSubcategoriesDto,
+    SubcategoryDto,
+} from './dto/paginated-subcategories.dto';
 
 @Controller('subcategories')
 export class SubcategoriesController {
@@ -66,6 +69,15 @@ export class SubcategoriesController {
             createSubcategoryDto,
             imageFile,
         );
+    }
+
+    @Get('get-total-subcategories')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('ADMIN', 'SUBADMIN')
+    @ApiCookieAuth()
+    @ApiOkResponse({ type: SubcategoryDto }) // Replace CategoryDto with your actual DTO
+    async getTotalCategories() {
+        return this.subcategoriesService.getTotalSubCategories();
     }
 
     @Get('get-all-subcategories')

@@ -11,6 +11,7 @@ import {
     BadRequestException,
     InternalServerErrorException,
     UseGuards,
+    UploadedFiles,
 } from '@nestjs/common';
 import { S3Service } from './s3.service';
 //import { CreateS3Dto } from './dto/create-s3.dto';
@@ -19,10 +20,11 @@ import {
     ApiBearerAuth,
     ApiBody,
     ApiConsumes,
+    ApiCookieAuth,
     ApiOperation,
     ApiResponse,
 } from '@nestjs/swagger';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
@@ -37,6 +39,9 @@ export class S3Controller {
     constructor(private readonly s3Service: S3Service) {}
 
     @Post('upload')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('ADMIN', 'SUBADMIN')
+    @ApiCookieAuth()
     @ApiOperation({ summary: 'Upload a file to S3 with dynamic folder' })
     @ApiConsumes('multipart/form-data')
     @ApiBody({
@@ -52,10 +57,6 @@ export class S3Controller {
                     example: 'categories',
                     description: 'Folder name where the file will be stored',
                 },
-                makePublic: {
-                    type: 'boolean',
-                    description: 'Whether to make the file public',
-                },
             },
             required: ['file', 'folder'],
         },
@@ -69,6 +70,46 @@ export class S3Controller {
         @Body() body: UploadFileDto,
     ) {
         return this.s3Service.uploadFile(file, body.folder);
+    }
+
+    @Post('upload-multiple-images')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('ADMIN', 'SUBADMIN')
+    @ApiCookieAuth()
+    @UseInterceptors(FilesInterceptor('files')) // 'files' is the field name in the form-data
+    @ApiConsumes('multipart/form-data')
+    @ApiBody({
+        description: 'Multiple product files',
+        schema: {
+            type: 'object',
+            properties: {
+                files: {
+                    type: 'array',
+                    items: {
+                        type: 'string',
+                        format: 'binary',
+                    },
+                },
+            },
+        },
+    })
+    @ApiResponse({ status: 201, description: 'Files uploaded successfully' })
+    @ApiResponse({ status: 400, description: 'Bad request' })
+    async uploadProductFiles(@UploadedFiles() files: Express.Multer.File[]) {
+        if (!files || files.length === 0) {
+            throw new BadRequestException('No files uploaded');
+        }
+
+        try {
+            const results =
+                await this.s3Service.uploadMultipleProductFiles(files);
+            return {
+                message: 'Files uploaded successfully',
+                data: results,
+            };
+        } catch (error) {
+            throw new InternalServerErrorException(error.message);
+        }
     }
 
     // @Get()

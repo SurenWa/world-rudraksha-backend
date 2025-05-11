@@ -35,30 +35,17 @@ model Category {
     createdAt       DateTime @default(now())
     updatedAt       DateTime @updatedAt
 
-    subCategories   SubCategory[]
-    // Hierarchy and relationships
-    // parentId    String?  // For sub-categories
-    // parent      Category? @relation("CategoryToCategory", fields: [parentId], references: [id])
-    // children    Category[] @relation("CategoryToCategory")
+    subCategories SubCategory[]
+    products      Product[]
 
-    // // Content for SEO
-    // content     Json?    // Rich text content with headings, images etc.
-    // featured    Boolean @default(false)
-
-    // // Tracking
-    // addedBy     String   // User ID
-    // views       Int      @default(0)
-    // popularity  Float    @default(0.0)  
-
-    // Indexes for better query performance
     @@index([slug])
     @@index([name])
 }
 
 model SubCategory {
-    id              Int      @id @default(autoincrement())
-    name            String   
-    slug            String   @unique
+    id              Int       @id @default(autoincrement())
+    name            String
+    slug            String    @unique
     image           String
     description     String
     metaTitle       String?
@@ -66,19 +53,135 @@ model SubCategory {
     keywords        String[] // SEO keywords
     tags            String[] // Your existing tags [1,2,3,4]
     addedBy         String
-
+    products        Product[]
     // Foreign Key for One-to-Many Relationship
     categoryId      Int
     category        Category  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
     // Timestamps
-    createdAt       DateTime @default(now())
-    updatedAt       DateTime @updatedAt
+    createdAt       DateTime  @default(now())
+    updatedAt       DateTime  @updatedAt
+
     @@index([slug])
-    
+}
+
+model Attribute {
+    id               Int                @id @default(autoincrement())
+    name             String
+    addedBy          String
+    values           AttributeValue[] // One-to-many relation
+    createdAt        DateTime           @default(now())
+    updatedAt        DateTime           @updatedAt
+    ProductAttribute ProductAttribute[]
+}
+
+model AttributeValue {
+    id                 Int                  @id @default(autoincrement())
+    value              String
+    description        String?
+    image              String? // Optional image URL or path
+    attribute          Attribute            @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+    attributeId        Int
+    createdAt          DateTime             @default(now())
+    updatedAt          DateTime             @updatedAt
+    VariantCombinations VariantCombination[]
+}
+
+model Product {
+    id                 Int                @id @default(autoincrement())
+    slug               String             @unique
+    title              String
+    sku                String?            @unique
+    productType        ProductType
+    category           Category?          @relation(fields: [categoryId], references: [id])
+    categoryId         Int?
+    subcategory        SubCategory?       @relation(fields: [subcategoryId], references: [id])
+    subcategoryId      Int?
+    description        Json // Structured as { description: String, benefits: String, whoShouldWear: String, wearingRules: String }
+    new                Boolean            @default(false)
+    sale               Boolean            @default(false)
+    basePrice          Float    
+    maxStock           Int?
+    minStock           Int?
+    currentStock       Int                @default(0)
+    shippingPrice      Float              @default(0.0)
+    soldQuantity       Int                @default(0)
+    availabilityStatus AvailabilityStatus @default(AVAILABLE)
+    addedBy            String
+    thumbImages        String[]           @default([]) // Array of 2 image URLs
+    images             String[]           @default([]) // Array of 3 image URLs
+    createdAt          DateTime           @default(now())
+    updatedAt          DateTime           @updatedAt
+    ProductAttribute   ProductAttribute[]
+    ProductVariant     ProductVariant[]
+    //seo
+    metaTitle       String?
+    metaDescription String?
+    keywords        String[] // SEO keywords
+    tags            String[] // Your existing tags [1,2,3,4]
+    productUrl      String?
+
+    @@index([slug])
+    @@map("products")
+}
+
+model ProductAttribute {
+    id          Int       @id @default(autoincrement())
+    product     Product   @relation(fields: [productId], references: [id])
+    attribute   Attribute @relation(fields: [attributeId], references: [id])
+    productId   Int
+    attributeId Int
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+
+    @@unique([productId, attributeId])
+    @@map("product_attributes")
+}
+
+model ProductVariant {
+    id           Int                  @id @default(autoincrement())
+    sku          String               @unique
+    price        Float
+    costPrice    Float?
+    stock        Int                  @default(0)
+    product      Product              @relation(fields: [productId], references: [id])
+    productId    Int
+    combinations VariantCombination[]
+    createdAt    DateTime             @default(now())
+    updatedAt    DateTime             @updatedAt()
+
+    @@map("product_variants")
+    @@index([productId])
+    @@index([sku])
+}
+
+model VariantCombination {
+    id               Int            @id @default(autoincrement())
+    variant          ProductVariant @relation(fields: [variantId], references: [id])
+    attributeValue   AttributeValue @relation(fields: [attributeValueId], references: [id])
+    variantId        Int
+    attributeValueId Int
+    createdAt        DateTime       @default(now())
+    updatedAt        DateTime       @updatedAt()
+
+    @@unique([variantId, attributeValueId])
+    @@map("variant_combinations")
+    @@index([variantId])
+    @@index([attributeValueId])
 }
 
 enum Role {
     USER
     SUBADMIN
     ADMIN
+}
+
+enum ProductType {
+    BEADS
+    MALA
+    COMBINATION
+}
+
+enum AvailabilityStatus {
+    COMING_SOON
+    AVAILABLE
 }

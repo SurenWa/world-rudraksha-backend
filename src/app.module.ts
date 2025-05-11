@@ -9,6 +9,8 @@ import { S3Module } from './s3/s3.module';
 import { CategoriesModule } from './categories/categories.module';
 import { CategoriesService } from './categories/categories.service';
 import { SubcategoriesModule } from './subcategories/subcategories.module';
+import { AttributesModule } from './attributes/attributes.module';
+import { ProductsModule } from './products/products.module';
 
 @Module({
     imports: [
@@ -17,6 +19,8 @@ import { SubcategoriesModule } from './subcategories/subcategories.module';
         S3Module,
         CategoriesModule,
         SubcategoriesModule,
+        AttributesModule,
+        ProductsModule,
     ],
     controllers: [AppController],
     providers: [AppService, PrismaService, S3Service, CategoriesService],
