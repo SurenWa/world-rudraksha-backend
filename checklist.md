@@ -1,86 +1,62 @@
-# Project Checklist for World Rudraksha Online Store
+# Project Checklist for World Rudraksha Online Store (Backend)
 
-This checklist tracks the implementation status of features based on the project requirements.
+This checklist tracks the implementation status of backend features based on the project requirements.
 
-## 1. Web Design
+## 1. Core Backend Development
 
-*   [ ] Responsive and device-friendly design
-*   [ ] Latest technology stack for frontend
-*   [ ] User-friendly interface
-*   [ ] Attractive and modern aesthetic
-*   [ ] Dynamic sliders
-
-## 2. Web/App Development
-
-*   [ ] Finalized design development
-*   [ ] Search bar functionality
-
-## 3. Technical Details
-
-*   [ ] Artistic design implementation
-*   [ ] Responsive implementation
-*   [ ] Web graphics optimization
-*   [ ] Image optimization/editing pipeline
-*   [x] React-based coding (Frontend - assumed, as backend is NestJS)
-*   [ ] Navigation implementation
-*   [ ] Simple CMS integration
 *   [x] Node.js backend (NestJS)
-*   [ ] Contact form implementation
-*   [ ] Custom functionality implementation (as per requirements)
-*   [x] Integrated CMS (Backend - partially, as modules are present)
-*   [ ] 24/7 support (Operational - not code related)
+*   [x] Integrated CMS (Backend modules for categories, products, etc.)
+*   [ ] Custom functionality implementation (as per requirements - specific features not yet identified)
 
-## 4. Website Features
+## 2. Backend Features
 
-### A. User (Web) Features
+### A. User Features (Backend)
 
-*   [x] Signup/Login
-    *   [x] Name
-    *   [x] Email
-    *   [x] Password
-    *   [ ] OTP verification
-    *   [x] Forgot password
-    *   [ ] Social login
-*   [ ] User Profile
-    *   [ ] View/edit profile
-    *   [ ] Change password
-    *   [ ] My Orders
-    *   [ ] Wishlist management
+*   [x] Signup/Login API
+    *   [x] Name handling
+    *   [x] Email handling
+    *   [x] Password handling
+    *   [ ] OTP verification API
+    *   [x] Forgot password API
+    *   [ ] Social login API integration
+*   [ ] User Profile API
+    *   [ ] View/edit profile API
+    *   [ ] Change password API
+    *   [ ] My Orders API (requires order module)
+    *   [ ] Wishlist management API (requires wishlist module)
 
-### B. Admin Panel (Web) Features
+### B. Admin Panel Features (Backend)
 
-*   [x] Admin Login (Email & password)
-*   [ ] Admin Dashboard
-    *   [ ] Latest orders display
-    *   [ ] Total products count
-    *   [ ] Total users count
-    *   [ ] Total sales display
-*   [x] Product Management
-    *   [x] Category management (via Categories module)
-    *   [x] Add/edit products
-    *   [ ] Hide/show products
-*   [ ] Order Management
-    *   [ ] Notifications
-    *   [ ] View orders
-    *   [ ] Order history
-*   [x] User Management
-    *   [x] List users
-    *   [ ] Block/Unblock users
-    *   [ ] View user details
-*   [ ] Content Management
-    *   [ ] Banners
-    *   [ ] FAQ
-    *   [ ] Privacy Policy
-    *   [ ] T&C
-    *   [ ] Return Policy
-*   [ ] Admin Management
-    *   [ ] Create/Block/Unblock sub-admins
+*   [x] Admin Login API (Email & password)
+*   [ ] Admin Dashboard Data APIs
+    *   [ ] Latest orders data
+    *   [ ] Total products count API
+    *   [ ] Total users count API
+    *   [ ] Total sales data
+*   [x] Product Management API
+    *   [x] Category management API (via Categories module)
+    *   [x] Add/edit products API
+    *   [ ] Hide/show products API
+*   [ ] Order Management API
+    *   [ ] Notifications API
+    *   [ ] View orders API
+    *   [ ] Order history API
+*   [x] User Management API
+    *   [x] List users API
+    *   [ ] Block/Unblock users API
+    *   [ ] View user details API
+*   [ ] Content Management API
+    *   [ ] Banners API
+    *   [ ] FAQ API
+    *   [ ] Privacy Policy API
+    *   [ ] T&C API
+    *   [ ] Return Policy API
+*   [ ] Admin Management API
+    *   [ ] Create/Block/Unblock sub-admins API
 
-## 5. Additional Features
+## 3. Additional Backend Features
 
-*   [ ] Multi-slider/featured banners
-*   [ ] Social media sharing
-*   [ ] Advanced search
-*   [x] Two-level categories (Categories and Subcategories modules)
-*   [x] Unlimited products (listing, filters, detailed page - backend support)
-*   [ ] International payment integration
+*   [ ] Advanced search API
+*   [x] Two-level categories (Categories and Subcategories modules implemented)
+*   [x] Unlimited products (listing, filters, detailed page - backend support for data)
+*   [ ] International payment integration API
