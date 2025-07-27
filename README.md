@@ -1,99 +1,113 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# World Rudraksha Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+This is the backend application for the World Rudraksha e-commerce platform, built with NestJS. It provides RESTful APIs for managing users, products, categories, attributes, and handles authentication and S3 integration.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Technologies Used
 
-## Description
+*   **NestJS**: A progressive Node.js framework for building efficient, reliable and scalable server-side applications.
+*   **TypeScript**: A typed superset of JavaScript that compiles to plain JavaScript.
+*   **Prisma**: A next-generation ORM for Node.js and TypeScript.
+*   **PostgreSQL**: A powerful, open source object-relational database system.
+*   **JWT (JSON Web Tokens)**: For authentication and authorization.
+*   **AWS S3**: For file storage (e.g., product images).
+*   **Docker**: For containerization.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Setup Instructions
 
-## Project setup
+### Prerequisites
 
-```bash
-$ pnpm install
+*   Node.js (v20.x or higher)
+*   npm or pnpm
+*   PostgreSQL database
+*   Docker (optional, for containerized deployment)
+
+### Installation
+
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/your-username/world-rudraksha-backend.git
+    cd world-rudraksha-backend
+    ```
+
+2.  Install dependencies:
+    ```bash
+    npm install
+    # or if you use pnpm
+    # pnpm install
+    ```
+
+### Environment Variables
+
+Create a `.env` file in the root directory of the project and add the following environment variables:
+
+```env
+DATABASE_URL="postgresql://user:password@localhost:5432/world_rudraksha_db?schema=public"
+JWT_SECRET="your_jwt_secret_key"
+JWT_EXPIRATION="1h"
+REFRESH_TOKEN_SECRET="your_refresh_token_secret_key"
+REFRESH_TOKEN_EXPIRATION="7d"
+AWS_ACCESS_KEY_ID="your_aws_access_key_id"
+AWS_SECRET_ACCESS_KEY="your_aws_secret_access_key"
+AWS_REGION="your_aws_region"
+AWS_S3_BUCKET_NAME="your_s3_bucket_name"
 ```
 
-## Compile and run the project
+### Database Setup
+
+1.  Ensure your PostgreSQL database is running.
+2.  Run Prisma migrations to set up your database schema:
+    ```bash
+    npx prisma migrate dev --name init
+    ```
+
+### Running the Application
+
+#### Development
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+npm run start:dev
+# or if you use pnpm
+# pnpm run start:dev
 ```
 
-## Run tests
+The application will be accessible at `http://localhost:5000` (or the port configured in `main.ts`).
+
+#### Production Build
 
 ```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+npm run build
+npm run start:prod
+# or if you use pnpm
+# pnpm run build
+# pnpm run start:prod
 ```
 
-## Deployment
+### Dockerization
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+You can build and run the application using Docker:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+1.  Build the Docker image:
+    ```bash
+    docker build -t world-rudraksha-backend .
+    ```
 
-```bash
-$ pnpm install -g mau
-$ mau deploy
-```
+2.  Run the Docker container:
+    ```bash
+    docker run -p 5000:5000 --env-file ./.env world-rudraksha-backend
+    ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+    Make sure your `.env` file is correctly configured with the database URL accessible from within the Docker container (e.g., if your database is on `localhost`, you might need to use `host.docker.internal` as the host in the `DATABASE_URL` for Docker Desktop on Windows/Mac, or the appropriate IP address for Linux).
 
-## Resources
+## API Endpoints (Overview)
 
-Check out a few resources that may come in handy when working with NestJS:
+The application exposes various RESTful API endpoints for managing different resources. Key modules include:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+*   `/auth`: User authentication (signup, login, refresh token).
+*   `/users`: User management (if applicable, e.g., for admin roles).
+*   `/categories`: Category management (create, read, update, delete categories).
+*   `/subcategories`: Subcategory management.
+*   `/products`: Product management (create, read, update, delete products, handle product variations and SEO).
+*   `/attributes`: Product attribute management.
+*   `/s3`: S3 file upload and management.
 
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Detailed API documentation (e.g., Swagger/OpenAPI) can be generated or will be available once the application is running.
